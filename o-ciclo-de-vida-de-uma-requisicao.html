@@ -1,0 +1,1489 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Introdução passo a passo ao framework web [Flask]">
+      
+      
+        <meta name="author" content="Serge Tahé">
+      
+      
+        <link rel="canonical" href="https://stahe.github.io/br-flask-sept-2026/o-ciclo-de-vida-de-uma-requisicao.html">
+      
+      
+        <link rel="prev" href="escopos-de-dados.html">
+      
+      
+        <link rel="next" href="autenticacao-e-autorizacao.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>7. O ciclo de vida de uma requisição - Introdução passo a passo ao framework web [Flask]</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="stylesheets/focus.css">
+    
+      <link rel="stylesheet" href="stylesheets/bidi.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EBZC3JVJNR"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    var siteName = "Introdução passo a passo ao framework web [Flask]";
+    gtag('config', 'G-EBZC3JVJNR', {
+        'page_title': siteName
+    });
+  </script>
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#7-o-ciclo-de-vida-de-uma-requisicao" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="Introdução passo a passo ao framework web [Flask]" class="md-header__button md-logo" aria-label="Introdução passo a passo ao framework web [Flask]" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Introdução passo a passo ao framework web [Flask]
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              7. O ciclo de vida de uma requisição
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="purple"  aria-label="Alternar para o modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Alternar para o modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="purple"  aria-label="Alternar para o modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Alternar para o modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://stahe.github.io/br-flask-sept-2026" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="Introdução passo a passo ao framework web [Flask]" class="md-nav__button md-logo" aria-label="Introdução passo a passo ao framework web [Flask]" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Introdução passo a passo ao framework web [Flask]
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://stahe.github.io/br-flask-sept-2026" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bem-vindo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="introducao.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Introdução
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="actions-roteamento-respostas.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Actions, roteamento, respostas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="o-modelo-da-action.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. O modelo da action
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="a-view-e-seu-modelo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. A view e seu modelo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="internacionalizacao.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Internacionalização
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="escopos-de-dados.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Escopos de dados
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. O ciclo de vida de uma requisição
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="o-ciclo-de-vida-de-uma-requisicao.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. O ciclo de vida de uma requisição
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#71-exemplo-24-as-etapas-do-processamento-de-uma-requisicao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1. Exemplo 24: As etapas do processamento de uma requisição
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.1. Exemplo 24: As etapas do processamento de uma requisição">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#711-o-middleware-wsgi-filtersloggerpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1.1. O middleware WSGI: filters/logger.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#712-o-conversor-filtersintegerpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1.2. O conversor: filters/integer.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#713-acoes-marcadas-filtersmarkspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1.3. Ações marcadas: filters/marks.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#714-hooks-filtershookspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1.4. Hooks: filters/hooks.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#715-tratamento-de-erros-filterserrorspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1.5. Tratamento de erros: filters/errors.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#716-o-controller-e-a-pagina-de-erro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1.6. O controller e a página de erro
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#717-configuracao-apppy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1.7. Configuração: app.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#718-execucao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1.8. Execução
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="autenticacao-e-autorizacao.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Autenticação e autorização
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="arquitetura-em-camadas-e-acesso-a-dados.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Arquitetura em camadas e acesso a dados
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="conclusao-parcial.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Conclusão parcial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="estudo-de-caso-a-aplicacao-rdvmedecins.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11. Estudo de caso: a aplicação RdvMedecins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="conclusao.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12. Conclusão
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="apendices.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13. Apêndices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="7-o-ciclo-de-vida-de-uma-requisicao">7. <span style="color: #2e74b5">O ciclo de vida de uma requisição</span></h1>
+<p>Entre a chegada de uma requisição e o envio de sua resposta, o <em>[Flask]</em> passa por várias etapas, e a aplicação pode intervir em cada uma delas. Já encontramos várias delas: os conversores de variáveis de caminho (exemplos 02 e 12), as funções <strong><em>[before_request]</em></strong> (exemplos 16, 22 e 23) e os tratadores de erro (exemplos 08 e 12). Este capítulo as reúne em um único exemplo, que exibe uma mensagem no console a cada etapa para que você possa observar a ordem:</p>
+<p><img src="images/10000000000003E80000017CC3E6CEC3.png" width="605" height="230" style="width:16cm;height:6.08cm;" alt="Image" class="odt-zoomable" data-zoom-src="images/10000000000003E80000017CC3E6CEC3.png" /></p>
+<ul>
+<li><strong>1 e 8. O middleware WSGI</strong>. <em>[WSGI]</em> (*Web Server Gateway Interface*) é o padrão que conecta um servidor web escrito em <em>[Python]</em> a uma aplicação. Do ponto de vista do servidor, uma aplicação <em>[Flask]</em> é simplesmente um objeto chamável que recebe a descrição da requisição e gera a resposta. <strong>Um middleware</strong> é um objeto do mesmo tipo que <strong>envolve</strong> a aplicação: ele intercepta a requisição antes que chegue ao <em>[Flask]</em> e a resposta depois dele. É o equivalente dos filtros de servlet do <em>[Java]</em>;</li>
+<li><strong>2. O roteamento</strong>. <em>[Flask]</em> procura a rota que corresponde à URL, e os conversores de rota transformam as variáveis de caminho;</li>
+<li><strong>3 e 4. As funções</strong> <strong><em>[before_request]</em></strong> , executadas na ordem em que foram registradas. Se alguma delas retornar uma resposta (ou lançar uma exceção), o processamento para ali: a ação não é chamada. É aqui que verificamos se um usuário está logado (próximo capítulo);</li>
+<li><strong>5. A ação</strong>, e a view que ela gera;</li>
+<li><strong>6. As funções</strong> <strong><em>[after_request]</em></strong> , que recebem a resposta, podem modificá-la (adicionar um cabeçalho ou um cookie) e devem retorná-la. São executadas na ordem <strong>inversa</strong> de seu registro;</li>
+<li><strong>7. As funções</strong> <strong><em>[teardown_request]</em></strong> , que são <strong>sempre</strong> executadas bem no final, mesmo que uma exceção tenha interrompido o processamento. Elas não podem mais modificar a resposta; sua finalidade é liberar recursos (como fechar uma conexão com o banco de dados);</li>
+<li><strong>x. Tratadores de erro</strong> (<strong><em>[errorhandler]</em></strong>): uma exceção lançada por uma função <strong><em>[before_request]</em></strong>, por uma ação ou por uma view é entregue ao tratador registrado para sua classe, que gera uma resposta de erro. Essa resposta passa então pelas funções <strong><em>[after_request]</em></strong>, como uma resposta comum.</li>
+</ul>
+<p>São os equivalentes dos interceptors do <em>[Spring MVC]</em> e dos filtros de ação do <em>[ASP.NET Core MVC]</em>. As funções <strong><em>[before_request]</em></strong>, <strong><em>[after_request],</em></strong> e <strong><em>[teardown_request]</em></strong> costumam ser chamadas de <strong>hooks</strong>.</p>
+<h2 id="71-exemplo-24-as-etapas-do-processamento-de-uma-requisicao">7.1. <span style="color: #2e74b5">Exemplo 24: As etapas do processamento de uma requisição</span></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>24-lifecycle/
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a>├── app.py
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a>├── controllers/
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a>│   └── calc.py
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a>├── filters/
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a>│   ├── errors.py
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a>│   ├── hooks.py
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a>│   ├── integer.py
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a>│   ├── logger.py
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a>│   └── marks.py
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a>└── templates/
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>    ├── calc/
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>    │   └── result.html
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a>    ├── error.html
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a>    └── layout.html
+</code></pre></div></td></tr></table></div>
+<p>A aplicação tem apenas uma ação, que calcula o quadrado de um inteiro: <strong><em>[/square/7]</em></strong>. Dependendo da URL, ela é bem-sucedida ou falha de várias maneiras.</p>
+<h3 id="711-o-middleware-wsgi-filtersloggerpy">7.1.1. <span style="color: #1f4d78">O middleware WSGI: filters/logger.py</span></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span>
+<span class="normal"><a href="#__codelineno-1-15">15</a></span>
+<span class="normal"><a href="#__codelineno-1-16">16</a></span>
+<span class="normal"><a href="#__codelineno-1-17">17</a></span>
+<span class="normal"><a href="#__codelineno-1-18">18</a></span>
+<span class="normal"><a href="#__codelineno-1-19">19</a></span>
+<span class="normal"><a href="#__codelineno-1-20">20</a></span>
+<span class="normal"><a href="#__codelineno-1-21">21</a></span>
+<span class="normal"><a href="#__codelineno-1-22">22</a></span>
+<span class="normal"><a href="#__codelineno-1-23">23</a></span>
+<span class="normal"><a href="#__codelineno-1-24">24</a></span>
+<span class="normal"><a href="#__codelineno-1-25">25</a></span>
+<span class="normal"><a href="#__codelineno-1-26">26</a></span>
+<span class="normal"><a href="#__codelineno-1-27">27</a></span>
+<span class="normal"><a href="#__codelineno-1-28">28</a></span>
+<span class="normal"><a href="#__codelineno-1-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="c1"># filters/logger.py: um MIDDLEWARE WSGI. WSGI é o padrão que conecta um</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="c1"># servidor web Python a uma aplicação: a aplicação é um objeto chamável</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="c1"># app(environ, start_response). Um middleware é um objeto desse tipo, que ENVOLVE</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="c1"># a aplicação: ele vê cada requisição passar ANTES do Flask, e a resposta DEPOIS</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">LoggerMiddleware</span><span class="p">:</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">application</span><span class="p">):</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">application</span> <span class="o">=</span> <span class="n">application</span>  <span class="c1"># a aplicação envolvida (Flask)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a>        <span class="c1"># environ: um dicionário que descreve a requisição (método, caminho...)</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a>        <span class="n">request</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s2">"REQUEST_METHOD"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">environ</span><span class="p">[</span><span class="s2">"PATH_INFO"</span><span class="p">]</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13"></a>        <span class="k">if</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"QUERY_STRING"</span><span class="p">):</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14"></a>            <span class="n">request</span> <span class="o">+=</span> <span class="s2">"?"</span> <span class="o">+</span> <span class="n">environ</span><span class="p">[</span><span class="s2">"QUERY_STRING"</span><span class="p">]</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15"></a>        <span class="nb">print</span><span class="p">()</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">"---"</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">"1. middleware (before)"</span><span class="p">)</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18"></a>        <span class="n">status</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19"></a>
+<a id="__codelineno-1-20" name="__codelineno-1-20"></a>        <span class="c1"># start_response: a função pela qual o Flask anuncia o código e os</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21"></a>        <span class="c1"># cabeçalhos da resposta; nós a envolvemos para anotar o código na passagem</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">spy_start_response</span><span class="p">(</span><span class="n">status_line</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23"></a>            <span class="n">status</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">status_line</span><span class="p">)</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24"></a>            <span class="k">return</span> <span class="n">start_response</span><span class="p">(</span><span class="n">status_line</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">exc_info</span><span class="p">)</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25"></a>
+<a id="__codelineno-1-26" name="__codelineno-1-26"></a>        <span class="c1"># todo o resto: o Flask, a ação, a view</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27"></a>        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">spy_start_response</span><span class="p">)</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"8. middleware (after: code </span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'?'</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29"></a>        <span class="k">return</span> <span class="n">response</span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Linha 7: o middleware recebe a aplicação que ele envolve;</li>
+<li>linha 10: o método especial <strong><em>[__call__]</em></strong> torna o objeto <strong>chamável</strong>: <strong><em>[middleware(environ, start_response)]</em></strong> executa esse método. Essa é a assinatura imposta pelo <em>[WSGI]</em>: <strong><em>[environ]</em></strong> é um dicionário que descreve a requisição (o método em <strong><em>[REQUEST_METHOD]</em></strong>, o caminho em <strong><em>[PATH_INFO]</em></strong>, os parâmetros em <strong><em>[QUERY_STRING]</em></strong>, os cabeçalhos etc.); <strong><em>[start_response]</em></strong> é uma função fornecida pelo servidor, que a aplicação chama para informar o código e os cabeçalhos da resposta;</li>
+<li>linhas 12–17: o middleware exibe a requisição. É a mensagem nº 1: nada aconteceu ainda no <em>[Flask]</em>;</li>
+<li>linhas 22–24: para determinar o código da resposta, o middleware passa à aplicação uma função própria — no lugar de <strong><em>[start_response]</em></strong> — que registra o código à medida que ele passa e depois chama a função verdadeira. É uma <strong>função interna</strong> (definida dentro de outra função): ela tem acesso às variáveis da função que a contém, neste caso a lista <strong><em>[status]</em></strong>;</li>
+<li>linha 27: a chamada da aplicação envolvida: o restante do processamento ocorre dentro dessa chamada;</li>
+<li>linha 28: mensagem nº 8, quando o <em>[Flask]</em> terminou.</li>
+</ul>
+<p>Um middleware atua no nível do <em>[WSGI]</em>: ele desconhece <strong><em>[request]</em></strong>, <strong><em>[g]</em></strong> e as rotas do <em>[Flask]</em>. Ele é usado para processamentos que se aplicam a todas as requisições, independentemente da aplicação: registro em log, compressão, tratamento de um proxy etc. <em>[Werkzeug]</em> fornece alguns deles, como o <strong><em>[ProxyFix]</em></strong>, que corrige o endereço do cliente quando a aplicação está atrás de um servidor proxy (o estudo de caso aborda isso em relação ao endereço IP dos clientes).</p>
+<h3 id="712-o-conversor-filtersintegerpy">7.1.2. <span style="color: #1f4d78">O conversor: filters/integer.py</span></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1"># filters/integer.py: a variável de caminho &lt;integer:n&gt;, convertida em inteiro, ou</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="c1"># None se não for um inteiro (cabe então à ação decidir)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.routing</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseConverter</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">IntegerConverter</span><span class="p">(</span><span class="n">BaseConverter</span><span class="p">):</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a>    <span class="c1"># qualquer pedaço de caminho (sem barra)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a>    <span class="n">regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"[^/]+"</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'2. conversion of the parameter (received value: "</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">")'</span><span class="p">)</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13"></a>            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14"></a>        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15"></a>            <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+<p>Um conversor (exemplo 12) que aceita qualquer trecho de um caminho (<strong><em>[[^/]+]</em></strong>: um ou mais caracteres diferentes de <strong><em>[/]</em></strong>) e o converte por inteiro, ou para <strong><em>[None]</em></strong> se não for um valor válido. Diferentemente de <strong><em>[&lt;int:n&gt;]</em></strong>, que retornaria uma página 404 para <strong><em>[/square/abc]</em></strong>, aqui é a ação que determinará o resultado. Ele exibe a mensagem nº 2.</p>
+<h3 id="713-acoes-marcadas-filtersmarkspy">7.1.3. <span style="color: #1f4d78">Ações marcadas: filters/marks.py</span></h3>
+<p>As funções <strong><em>[before_request]</em></strong> são executadas antes de <strong>todas</strong> as ações. Muitas vezes, um processamento se aplica apenas a certas ações. Uma maneira simples de especificá-las é <strong>marcá-las</strong>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-3-10">10</a></span>
+<span class="normal"><a href="#__codelineno-3-11">11</a></span>
+<span class="normal"><a href="#__codelineno-3-12">12</a></span>
+<span class="normal"><a href="#__codelineno-3-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># filters/marks.py: dois decoradores que MARCAM uma ação, sem alterar</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="c1"># nada em sua execução: eles adicionam a ela um atributo, que as funções</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="c1"># de filters/hooks.py procuram</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">block</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a>    <span class="n">action</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8"></a>    <span class="k">return</span> <span class="n">action</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10"></a>
+<a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">timing</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12"></a>    <span class="n">action</span><span class="o">.</span><span class="n">timing</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13"></a>    <span class="k">return</span> <span class="n">action</span>
+</code></pre></div></td></tr></table></div>
+<p>Esses dois decoradores não alteram a ação em si: eles adicionam um atributo a ela (em <em>[Python]</em>, uma função é um objeto ao qual se podem adicionar atributos) e a deixam inalterada. As funções <strong><em>[before_request]</em></strong> procurarão essas marcas na ação visada pela requisição.</p>
+<h3 id="714-hooks-filtershookspy">7.1.4. <span style="color: #1f4d78">Hooks: filters/hooks.py</span></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span>
+<span class="normal"><a href="#__codelineno-4-17">17</a></span>
+<span class="normal"><a href="#__codelineno-4-18">18</a></span>
+<span class="normal"><a href="#__codelineno-4-19">19</a></span>
+<span class="normal"><a href="#__codelineno-4-20">20</a></span>
+<span class="normal"><a href="#__codelineno-4-21">21</a></span>
+<span class="normal"><a href="#__codelineno-4-22">22</a></span>
+<span class="normal"><a href="#__codelineno-4-23">23</a></span>
+<span class="normal"><a href="#__codelineno-4-24">24</a></span>
+<span class="normal"><a href="#__codelineno-4-25">25</a></span>
+<span class="normal"><a href="#__codelineno-4-26">26</a></span>
+<span class="normal"><a href="#__codelineno-4-27">27</a></span>
+<span class="normal"><a href="#__codelineno-4-28">28</a></span>
+<span class="normal"><a href="#__codelineno-4-29">29</a></span>
+<span class="normal"><a href="#__codelineno-4-30">30</a></span>
+<span class="normal"><a href="#__codelineno-4-31">31</a></span>
+<span class="normal"><a href="#__codelineno-4-32">32</a></span>
+<span class="normal"><a href="#__codelineno-4-33">33</a></span>
+<span class="normal"><a href="#__codelineno-4-34">34</a></span>
+<span class="normal"><a href="#__codelineno-4-35">35</a></span>
+<span class="normal"><a href="#__codelineno-4-36">36</a></span>
+<span class="normal"><a href="#__codelineno-4-37">37</a></span>
+<span class="normal"><a href="#__codelineno-4-38">38</a></span>
+<span class="normal"><a href="#__codelineno-4-39">39</a></span>
+<span class="normal"><a href="#__codelineno-4-40">40</a></span>
+<span class="normal"><a href="#__codelineno-4-41">41</a></span>
+<span class="normal"><a href="#__codelineno-4-42">42</a></span>
+<span class="normal"><a href="#__codelineno-4-43">43</a></span>
+<span class="normal"><a href="#__codelineno-4-44">44</a></span>
+<span class="normal"><a href="#__codelineno-4-45">45</a></span>
+<span class="normal"><a href="#__codelineno-4-46">46</a></span>
+<span class="normal"><a href="#__codelineno-4-47">47</a></span>
+<span class="normal"><a href="#__codelineno-4-48">48</a></span>
+<span class="normal"><a href="#__codelineno-4-49">49</a></span>
+<span class="normal"><a href="#__codelineno-4-50">50</a></span>
+<span class="normal"><a href="#__codelineno-4-51">51</a></span>
+<span class="normal"><a href="#__codelineno-4-52">52</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="c1"># filters/hooks.py: funções executadas ANTES e DEPOIS de cada ação</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">abort</span><span class="p">,</span> <span class="n">current_app</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">request</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="c1"># a ação que tratará a requisição atual (None se nenhuma rota corresponder).</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="c1"># request.endpoint: o nome da ação ("calc.square"); view_functions:</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="c1"># o dicionário nome -&gt; função da aplicação</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="k">def</span><span class="w"> </span><span class="nf">targeted_action</span><span class="p">():</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a>    <span class="k">return</span> <span class="n">current_app</span><span class="o">.</span><span class="n">view_functions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">)</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="c1"># a marca [name] (veja marks.py) está colocada na ação visada?</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="k">def</span><span class="w"> </span><span class="nf">marked</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16"></a>    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">targeted_action</span><span class="p">(),</span> <span class="n">name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17"></a>
+<a id="__codelineno-4-18" name="__codelineno-4-18"></a>
+<a id="__codelineno-4-19" name="__codelineno-4-19"></a><span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20"></a>
+<a id="__codelineno-4-21" name="__codelineno-4-21"></a>    <span class="c1"># before_request: antes da ação. Se a função retornar uma resposta (ou lançar</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22"></a>    <span class="c1"># uma exceção), o processamento para aí: a ação não é chamada</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23"></a>    <span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">block</span><span class="p">():</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25"></a>        <span class="k">if</span> <span class="n">marked</span><span class="p">(</span><span class="s2">"block"</span><span class="p">):</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"3. before_request Block (targeted action: </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27"></a>            <span class="k">if</span> <span class="s2">"block"</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28"></a>                <span class="n">abort</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>  <span class="c1"># uma resposta de erro 403 (acesso negado)</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29"></a>
+<a id="__codelineno-4-30" name="__codelineno-4-30"></a>    <span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">timing_start</span><span class="p">():</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32"></a>        <span class="k">if</span> <span class="n">marked</span><span class="p">(</span><span class="s2">"timing"</span><span class="p">):</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33"></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">"4. before_request Timing (before)"</span><span class="p">)</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34"></a>            <span class="c1"># a hora de início, guardada em g (escopo de requisição)</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35"></a>            <span class="n">g</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36"></a>
+<a id="__codelineno-4-37" name="__codelineno-4-37"></a>    <span class="c1"># after_request: depois da ação (e da view que ela construiu), com a</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38"></a>    <span class="c1"># resposta, que a função pode modificar; ela deve retorná-la</span>
+<a id="__codelineno-4-39" name="__codelineno-4-39"></a>    <span class="nd">@app</span><span class="o">.</span><span class="n">after_request</span>
+<a id="__codelineno-4-40" name="__codelineno-4-40"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">timing_after</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+<a id="__codelineno-4-41" name="__codelineno-4-41"></a>        <span class="k">if</span> <span class="n">marked</span><span class="p">(</span><span class="s2">"timing"</span><span class="p">):</span>
+<a id="__codelineno-4-42" name="__codelineno-4-42"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"6. after_request Timing (code </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<a id="__codelineno-4-43" name="__codelineno-4-43"></a>        <span class="k">return</span> <span class="n">response</span>
+<a id="__codelineno-4-44" name="__codelineno-4-44"></a>
+<a id="__codelineno-4-45" name="__codelineno-4-45"></a>    <span class="c1"># teardown_request: bem no final, sempre chamado, com a possível</span>
+<a id="__codelineno-4-46" name="__codelineno-4-46"></a>    <span class="c1"># exceção (não tratada); ele não pode mais alterar a resposta</span>
+<a id="__codelineno-4-47" name="__codelineno-4-47"></a>    <span class="nd">@app</span><span class="o">.</span><span class="n">teardown_request</span>
+<a id="__codelineno-4-48" name="__codelineno-4-48"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">timing_end</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+<a id="__codelineno-4-49" name="__codelineno-4-49"></a>        <span class="k">if</span> <span class="s2">"start"</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+<a id="__codelineno-4-50" name="__codelineno-4-50"></a>            <span class="n">ms</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">g</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+<a id="__codelineno-4-51" name="__codelineno-4-51"></a>            <span class="n">outcome</span> <span class="o">=</span> <span class="s2">""</span> <span class="k">if</span> <span class="n">exception</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">", exception </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">exception</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
+<a id="__codelineno-4-52" name="__codelineno-4-52"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"7. teardown_request Timing (end, </span><span class="si">{</span><span class="n">ms</span><span class="si">}</span><span class="s2"> ms</span><span class="si">{</span><span class="n">outcome</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Linhas 10–11: a ação que tratará a requisição. Após o roteamento, <strong><em>[request.endpoint]</em></strong> contém o nome da rota selecionada (<strong><em>[calc.square]</em></strong>: o nome do blueprint, um ponto e o nome da função); <strong><em>[current_app.view_functions]</em></strong> é o dicionário que associa cada nome à sua função correspondente. Se nenhuma rota corresponder, <strong><em>[request.endpoint]</em></strong> é definido como <strong><em>[None]</em></strong>, e a função retorna <strong><em>[None]</em></strong>;</li>
+<li>linhas 15–16: a marca está definida? <strong><em>[getattr(object, name, default)]</em></strong> retorna o atributo com o nome indicado, ou o valor padrão se ele não existir (ou se o objeto for <strong><em>[None]</em></strong>);</li>
+<li>linha 19: os callbacks são registrados por uma função chamada por <strong><em>[app.py]</em></strong>;</li>
+<li>linhas 24–28: o primeiro hook, mensagem nº 3: para uma ação marcada com [block], o parâmetro <strong><em>[?block]</em></strong> da URL provoca um erro 403 (*Forbidden*, acesso negado): <strong><em>[abort]</em></strong> lança uma exceção, que interrompe o processamento;</li>
+<li>linhas 31–35: o segundo hook, mensagem nº 4: para uma ação marcada com <strong><em>[timing]</em></strong>, a hora de início é armazenada em <strong><em>[g]</em></strong>. <strong><em>[time.perf_counter()]</em></strong> é um relógio preciso, projetado para medir durações;</li>
+<li>linhas 39–43: mensagem nº 6. A função recebe a resposta e deve retorná-la (possivelmente modificada). <strong><em>[response.status_code]</em></strong> é o código da resposta;</li>
+<li>linhas 47–52: mensagem nº 7, contendo o tempo decorrido desde o hook nº 4. O teste <strong><em>[&quot;start&quot; in g]</em></strong> verifica se a medição foi iniciada. A função recebe a exceção que interrompeu o processamento, se houver alguma que não tenha sido tratada, e <strong><em>[None]</em></strong> caso contrário.</li>
+</ul>
+<h3 id="715-tratamento-de-erros-filterserrorspy">7.1.5. <span style="color: #1f4d78">Tratamento de erros: filters/errors.py</span></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-5-10">10</a></span>
+<span class="normal"><a href="#__codelineno-5-11">11</a></span>
+<span class="normal"><a href="#__codelineno-5-12">12</a></span>
+<span class="normal"><a href="#__codelineno-5-13">13</a></span>
+<span class="normal"><a href="#__codelineno-5-14">14</a></span>
+<span class="normal"><a href="#__codelineno-5-15">15</a></span>
+<span class="normal"><a href="#__codelineno-5-16">16</a></span>
+<span class="normal"><a href="#__codelineno-5-17">17</a></span>
+<span class="normal"><a href="#__codelineno-5-18">18</a></span>
+<span class="normal"><a href="#__codelineno-5-19">19</a></span>
+<span class="normal"><a href="#__codelineno-5-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="c1"># filters/errors.py: os tratadores de erro da aplicação</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">render_template</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">werkzeug.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPException</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8"></a>    <span class="c1"># uma exceção "inesperada" de um dado tipo: ValueError e suas subclasses</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9"></a>    <span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">value_error</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="ne">ValueError</span><span class="p">):</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"x. errorhandler ValueError (</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12"></a>        <span class="c1"># em vez da página de erro padrão, nossa view [error], com o código 500</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13"></a>        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">"error.html"</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">500</span><span class="p">),</span> <span class="mi">500</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14"></a>
+<a id="__codelineno-5-15" name="__codelineno-5-15"></a>    <span class="c1"># os erros HTTP (abort(400), abort(403), página desconhecida -&gt; 404...):</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16"></a>    <span class="c1"># HTTPException é a classe pai de todas as exceções HTTP do Werkzeug</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17"></a>    <span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">http_error</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">HTTPException</span><span class="p">):</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"e. errorhandler HTTPException (code </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20"></a>        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">"error.html"</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">),</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Linhas 9–13: um tratador de exceção para a classe <strong><em>[ValueError]</em></strong> (e suas subclasses): um erro “inesperado”, convertido em uma página de erro “personalizada” com código de status 500 (*Internal Server Error*). A mensagem da exceção é exibida no console, mas não na página: ela pode conter detalhes internos que não interessam ao usuário;</li>
+<li>Linhas 17–20: um tratador para todos os erros HTTP. <strong><em>[abort(400)]</em></strong>, <strong><em>[abort(403)]</em></strong>, uma URL de rota inexistente (404), um método proibido (405): todos lançam uma exceção de uma subclasse de <strong><em>[HTTPException]</em></strong> (<strong><em>[BadRequest]</em></strong>, <strong><em>[Forbidden]</em></strong>, <strong><em>[NotFound]</em></strong>...), que carrega seu código no atributo <strong><em>[code]</em></strong>. Esse único tratador substitui, portanto, todas as páginas de erro em inglês do <em>[Werkzeug]</em> pelas nossas.</li>
+</ul>
+<p>Para uma exceção, o <em>[Flask]</em> seleciona o tratador registrado para a classe mais próxima da dela. Também é possível registrar um tratador para um código específico: <strong><em>[@app.errorhandler(404)]</em></strong>. Uma exceção que não tem tratador se torna um erro 500: no modo de depuração, é a página de depuração (exemplo 03); sem o modo de depuração, é a página de erro 500 padrão ou a página do tratador registrado para o código 500.</p>
+<h3 id="716-o-controller-e-a-pagina-de-erro">7.1.6. <span style="color: #1f4d78">O controller e a página de erro</span></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-6-10">10</a></span>
+<span class="normal"><a href="#__codelineno-6-11">11</a></span>
+<span class="normal"><a href="#__codelineno-6-12">12</a></span>
+<span class="normal"><a href="#__codelineno-6-13">13</a></span>
+<span class="normal"><a href="#__codelineno-6-14">14</a></span>
+<span class="normal"><a href="#__codelineno-6-15">15</a></span>
+<span class="normal"><a href="#__codelineno-6-16">16</a></span>
+<span class="normal"><a href="#__codelineno-6-17">17</a></span>
+<span class="normal"><a href="#__codelineno-6-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="c1"># controllers/calc.py: uma ação marcada por dois decoradores</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">abort</span><span class="p">,</span> <span class="n">render_template</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">filters.marks</span><span class="w"> </span><span class="kn">import</span> <span class="n">block</span><span class="p">,</span> <span class="n">timing</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="n">calc</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s2">"calc"</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7"></a>
+<a id="__codelineno-6-8" name="__codelineno-6-8"></a>
+<a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="nd">@calc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/square/&lt;integer:n&gt;"</span><span class="p">)</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="nd">@block</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="nd">@timing</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="k">def</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"5. action square(</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14"></a>    <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15"></a>        <span class="n">abort</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>  <span class="c1"># um erro 400: veja filters/errors.py</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16"></a>    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">13</span><span class="p">:</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"13 brings bad luck"</span><span class="p">)</span>  <span class="c1"># um erro "inesperado"</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18"></a>    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">"calc/result.html"</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">square</span><span class="o">=</span><span class="n">n</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>linhas 9–11: a rota usa o conversor <strong><em>[integer]</em></strong>; a ação traz os dois decoradores. A ordem também importa aqui (exemplo 12): os decoradores são aplicados de baixo para cima, e o decorador de rota deve ser o último a ser aplicado (o primeiro escrito) para registrar a função decorada;</li>
+<li>linha 15: um parâmetro que não é um inteiro: erro 400;</li>
+<li>linha 17: o número 13 provoca um erro “inesperado”;</li>
+<li>linha 18: o caso normal.</li>
+</ul>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-7-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-7-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-7-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-7-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-7-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-7-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-7-10">10</a></span>
+<span class="normal"><a href="#__codelineno-7-11">11</a></span>
+<span class="normal"><a href="#__codelineno-7-12">12</a></span>
+<span class="normal"><a href="#__codelineno-7-13">13</a></span>
+<span class="normal"><a href="#__codelineno-7-14">14</a></span>
+<span class="normal"><a href="#__codelineno-7-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a>{% extends "layout.html" %}
+<a id="__codelineno-7-2" name="__codelineno-7-2"></a>{# a página de erro; seu modelo: o código do erro #}
+<a id="__codelineno-7-3" name="__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4"></a>{% block content %}
+<a id="__codelineno-7-5" name="__codelineno-7-5"></a>  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"alert alert-danger"</span><span class="p">&gt;</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6"></a>    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">"h4"</span><span class="p">&gt;</span>Error {{ code }}<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7"></a>    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">"mb-0"</span><span class="p">&gt;</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8"></a>      {% if code == 400 %}Bad request.
+<a id="__codelineno-7-9" name="__codelineno-7-9"></a>      {% elif code == 403 %}Access denied.
+<a id="__codelineno-7-10" name="__codelineno-7-10"></a>      {% elif code == 404 %}Page not found.
+<a id="__codelineno-7-11" name="__codelineno-7-11"></a>      {% else %}Internal server error.
+<a id="__codelineno-7-12" name="__codelineno-7-12"></a>      {% endif %}
+<a id="__codelineno-7-13" name="__codelineno-7-13"></a>    <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14"></a>  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15"></a>{% endblock %}
+</code></pre></div></td></tr></table></div>
+<p>A página de erro recebe o código de erro e exibe uma mensagem apropriada.</p>
+<h3 id="717-configuracao-apppy">7.1.7. <span style="color: #1f4d78">Configuração: app.py</span></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-8-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-8-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-8-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-8-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-8-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-8-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-8-10">10</a></span>
+<span class="normal"><a href="#__codelineno-8-11">11</a></span>
+<span class="normal"><a href="#__codelineno-8-12">12</a></span>
+<span class="normal"><a href="#__codelineno-8-13">13</a></span>
+<span class="normal"><a href="#__codelineno-8-14">14</a></span>
+<span class="normal"><a href="#__codelineno-8-15">15</a></span>
+<span class="normal"><a href="#__codelineno-8-16">16</a></span>
+<span class="normal"><a href="#__codelineno-8-17">17</a></span>
+<span class="normal"><a href="#__codelineno-8-18">18</a></span>
+<span class="normal"><a href="#__codelineno-8-19">19</a></span>
+<span class="normal"><a href="#__codelineno-8-20">20</a></span>
+<span class="normal"><a href="#__codelineno-8-21">21</a></span>
+<span class="normal"><a href="#__codelineno-8-22">22</a></span>
+<span class="normal"><a href="#__codelineno-8-23">23</a></span>
+<span class="normal"><a href="#__codelineno-8-24">24</a></span>
+<span class="normal"><a href="#__codelineno-8-25">25</a></span>
+<span class="normal"><a href="#__codelineno-8-26">26</a></span>
+<span class="normal"><a href="#__codelineno-8-27">27</a></span>
+<span class="normal"><a href="#__codelineno-8-28">28</a></span>
+<span class="normal"><a href="#__codelineno-8-29">29</a></span>
+<span class="normal"><a href="#__codelineno-8-30">30</a></span>
+<span class="normal"><a href="#__codelineno-8-31">31</a></span>
+<span class="normal"><a href="#__codelineno-8-32">32</a></span>
+<span class="normal"><a href="#__codelineno-8-33">33</a></span>
+<span class="normal"><a href="#__codelineno-8-34">34</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1"># app.py: a aplicação do exemplo 24</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">Flask</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5"></a>
+<a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">controllers.calc</span><span class="w"> </span><span class="kn">import</span> <span class="n">calc</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="kn">from</span><span class="w"> </span><span class="nn">filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">hooks</span><span class="p">,</span> <span class="n">errors</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="kn">from</span><span class="w"> </span><span class="nn">filters.integer</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegerConverter</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="kn">from</span><span class="w"> </span><span class="nn">filters.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoggerMiddleware</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10"></a>
+<a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="n">BOOTSTRAP</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">"common"</span> <span class="o">/</span> <span class="s2">"bootstrap"</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12"></a>
+<a id="__codelineno-8-13" name="__codelineno-8-13"></a>
+<a id="__codelineno-8-14" name="__codelineno-8-14"></a><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">():</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15"></a>    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16"></a>    <span class="n">app</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">trim_blocks</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17"></a>    <span class="n">app</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">lstrip_blocks</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-8-18" name="__codelineno-8-18"></a>    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">Blueprint</span><span class="p">(</span><span class="s2">"bootstrap"</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">static_folder</span><span class="o">=</span><span class="n">BOOTSTRAP</span><span class="p">,</span>
+<a id="__codelineno-8-19" name="__codelineno-8-19"></a>                                     <span class="n">static_url_path</span><span class="o">=</span><span class="s2">"/bootstrap"</span><span class="p">))</span>
+<a id="__codelineno-8-20" name="__codelineno-8-20"></a>    <span class="c1"># o conversor das variáveis &lt;integer:...&gt;</span>
+<a id="__codelineno-8-21" name="__codelineno-8-21"></a>    <span class="n">app</span><span class="o">.</span><span class="n">url_map</span><span class="o">.</span><span class="n">converters</span><span class="p">[</span><span class="s2">"integer"</span><span class="p">]</span> <span class="o">=</span> <span class="n">IntegerConverter</span>
+<a id="__codelineno-8-22" name="__codelineno-8-22"></a>    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">calc</span><span class="p">)</span>
+<a id="__codelineno-8-23" name="__codelineno-8-23"></a>    <span class="c1"># as funções executadas antes e depois de cada ação, na ordem</span>
+<a id="__codelineno-8-24" name="__codelineno-8-24"></a>    <span class="c1"># em que são registradas</span>
+<a id="__codelineno-8-25" name="__codelineno-8-25"></a>    <span class="n">hooks</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<a id="__codelineno-8-26" name="__codelineno-8-26"></a>    <span class="c1"># os tratadores de erro</span>
+<a id="__codelineno-8-27" name="__codelineno-8-27"></a>    <span class="n">errors</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<a id="__codelineno-8-28" name="__codelineno-8-28"></a>    <span class="c1"># o middleware WSGI: ele ENVOLVE toda a aplicação Flask</span>
+<a id="__codelineno-8-29" name="__codelineno-8-29"></a>    <span class="n">app</span><span class="o">.</span><span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">LoggerMiddleware</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">)</span>
+<a id="__codelineno-8-30" name="__codelineno-8-30"></a>    <span class="k">return</span> <span class="n">app</span>
+<a id="__codelineno-8-31" name="__codelineno-8-31"></a>
+<a id="__codelineno-8-32" name="__codelineno-8-32"></a>
+<a id="__codelineno-8-33" name="__codelineno-8-33"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+<a id="__codelineno-8-34" name="__codelineno-8-34"></a>    <span class="n">create_app</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li>Linha 21: o conversor;</li>
+<li>Linhas 25–27: os callbacks e os tratadores de erro;</li>
+<li>linha 29: o middleware. <strong><em>[app.wsgi_app]</em></strong> é o método pelo qual o servidor chama a aplicação <em>[Flask]</em>; ele é substituído pelo middleware, que chamará o antigo. Envolvemos <strong><em>[app.wsgi_app]</em></strong> em vez de <strong><em>[app]</em></strong> propriamente dito, para que a variável <strong><em>[app]</em></strong> continue sendo o objeto <em>[Flask]</em>, com seus métodos (<strong><em>[run]</em></strong>, <strong><em>[route]</em></strong>...).</li>
+</ul>
+<h3 id="718-execucao">7.1.8. <span style="color: #1f4d78">Execução</span></h3>
+<p>O caso normal, <strong><em>[/square/7]</em></strong>:</p>
+<p><img src="images/10000000000002BE0000006DD7CE2EE0.png" width="428" height="66" style="width:11.322cm;height:1.759cm;" alt="Image" class="odt-zoomable" data-zoom-src="images/10000000000002BE0000006DD7CE2EE0.png" /></p>
+<p>O console do servidor exibe as oito etapas, em ordem:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-9-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a>--- GET /square/7
+<a id="__codelineno-9-2" name="__codelineno-9-2"></a>1. middleware (before)
+<a id="__codelineno-9-3" name="__codelineno-9-3"></a>2. conversion of the parameter (received value: "7")
+<a id="__codelineno-9-4" name="__codelineno-9-4"></a>3. before_request Block (targeted action: calc.square)
+<a id="__codelineno-9-5" name="__codelineno-9-5"></a>4. before_request Timing (before)
+<a id="__codelineno-9-6" name="__codelineno-9-6"></a>5. action square(7)
+<a id="__codelineno-9-7" name="__codelineno-9-7"></a>6. after_request Timing (code 200)
+<a id="__codelineno-9-8" name="__codelineno-9-8"></a>7. teardown_request Timing (end, 1 ms)
+<a id="__codelineno-9-9" name="__codelineno-9-9"></a>8. middleware (after: code 200 OK)
+<a id="__codelineno-9-10" name="__codelineno-9-10"></a>127.0.0.1 - - [26/Sep/2026 15:39:00] "GET /square/7 HTTP/1.1" 200 -
+</code></pre></div></td></tr></table></div>
+<p>A última linha é a entrada de log do servidor de desenvolvimento do <em>[Werkzeug]</em>, escrita após o envio da resposta. Um acesso bloqueado, <strong><em>[/square/7?block]</em></strong>:</p>
+<p><img src="images/10000000000002BE000000B7E0E42CBB.png" width="428" height="112" style="width:11.322cm;height:2.953cm;" alt="Image" class="odt-zoomable" data-zoom-src="images/10000000000002BE000000B7E0E42CBB.png" /></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span>
+<span class="normal"><a href="#__codelineno-10-2">2</a></span>
+<span class="normal"><a href="#__codelineno-10-3">3</a></span>
+<span class="normal"><a href="#__codelineno-10-4">4</a></span>
+<span class="normal"><a href="#__codelineno-10-5">5</a></span>
+<span class="normal"><a href="#__codelineno-10-6">6</a></span>
+<span class="normal"><a href="#__codelineno-10-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a>--- GET /square/7?block
+<a id="__codelineno-10-2" name="__codelineno-10-2"></a>1. middleware (before)
+<a id="__codelineno-10-3" name="__codelineno-10-3"></a>2. conversion of the parameter (received value: "7")
+<a id="__codelineno-10-4" name="__codelineno-10-4"></a>3. before_request Block (targeted action: calc.square)
+<a id="__codelineno-10-5" name="__codelineno-10-5"></a>e. errorhandler HTTPException (code 403)
+<a id="__codelineno-10-6" name="__codelineno-10-6"></a>6. after_request Timing (code 403)
+<a id="__codelineno-10-7" name="__codelineno-10-7"></a>8. middleware (after: code 403 FORBIDDEN)
+</code></pre></div></td></tr></table></div>
+<p>A primeira chamada lançou uma exceção: a segunda chamada e a ação não foram executadas. A resposta de erro, gerada pelo tratador, passa por <strong><em>[after_request]</em></strong>; <strong><em>[teardown_request]</em></strong> foi chamada, mas não exibiu nada, pois a operação não chegou a começar. Um parâmetro que não é um inteiro, <strong><em>[/square/abc]</em></strong>:</p>
+<p><img src="images/10000000000002BE000000B713AD3FBA.png" width="428" height="112" style="width:11.322cm;height:2.953cm;" alt="Image" class="odt-zoomable" data-zoom-src="images/10000000000002BE000000B713AD3FBA.png" /></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-11-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-11-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-11-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-11-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-11-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-11-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-11-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-11-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-11-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1"></a>--- GET /square/abc
+<a id="__codelineno-11-2" name="__codelineno-11-2"></a>1. middleware (before)
+<a id="__codelineno-11-3" name="__codelineno-11-3"></a>2. conversion of the parameter (received value: "abc")
+<a id="__codelineno-11-4" name="__codelineno-11-4"></a>3. before_request Block (targeted action: calc.square)
+<a id="__codelineno-11-5" name="__codelineno-11-5"></a>4. before_request Timing (before)
+<a id="__codelineno-11-6" name="__codelineno-11-6"></a>5. action square(None)
+<a id="__codelineno-11-7" name="__codelineno-11-7"></a>e. errorhandler HTTPException (code 400)
+<a id="__codelineno-11-8" name="__codelineno-11-8"></a>6. after_request Timing (code 400)
+<a id="__codelineno-11-9" name="__codelineno-11-9"></a>7. teardown_request Timing (end, 0 ms)
+<a id="__codelineno-11-10" name="__codelineno-11-10"></a>8. middleware (after: code 400 BAD REQUEST)
+</code></pre></div></td></tr></table></div>
+<p>Desta vez, a ação foi chamada — <strong><em>[None]</em></strong> — e lançou o erro 400. Um erro “inesperado”, <strong><em>[/square/13]</em></strong>:</p>
+<p><img src="images/10000000000002BE000000B71A1427BF.png" width="428" height="112" style="width:11.322cm;height:2.953cm;" alt="Image" class="odt-zoomable" data-zoom-src="images/10000000000002BE000000B71A1427BF.png" /></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-12-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-12-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-12-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-12-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-12-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-12-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-12-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-12-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-12-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1"></a>--- GET /square/13
+<a id="__codelineno-12-2" name="__codelineno-12-2"></a>1. middleware (before)
+<a id="__codelineno-12-3" name="__codelineno-12-3"></a>2. conversion of the parameter (received value: "13")
+<a id="__codelineno-12-4" name="__codelineno-12-4"></a>3. before_request Block (targeted action: calc.square)
+<a id="__codelineno-12-5" name="__codelineno-12-5"></a>4. before_request Timing (before)
+<a id="__codelineno-12-6" name="__codelineno-12-6"></a>5. action square(13)
+<a id="__codelineno-12-7" name="__codelineno-12-7"></a>x. errorhandler ValueError (13 brings bad luck)
+<a id="__codelineno-12-8" name="__codelineno-12-8"></a>6. after_request Timing (code 500)
+<a id="__codelineno-12-9" name="__codelineno-12-9"></a>7. teardown_request Timing (end, 0 ms)
+<a id="__codelineno-12-10" name="__codelineno-12-10"></a>8. middleware (after: code 500 INTERNAL SERVER ERROR)
+</code></pre></div></td></tr></table></div>
+<p>A exceção foi tratada por seu tratador: o usuário vê a página de erro “personalizada”, e não a página de depuração, embora o modo de depuração esteja ativado. Por fim, uma URL que não corresponde a nenhuma rota, <strong><em>[/unknown]</em></strong>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1">1</a></span>
+<span class="normal"><a href="#__codelineno-13-2">2</a></span>
+<span class="normal"><a href="#__codelineno-13-3">3</a></span>
+<span class="normal"><a href="#__codelineno-13-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1"></a>--- GET /unknown
+<a id="__codelineno-13-2" name="__codelineno-13-2"></a>1. middleware (before)
+<a id="__codelineno-13-3" name="__codelineno-13-3"></a>e. errorhandler HTTPException (code 404)
+<a id="__codelineno-13-4" name="__codelineno-13-4"></a>8. middleware (after: code 404 NOT FOUND)
+</code></pre></div></td></tr></table></div>
+<p>O roteamento falhou: nenhuma rota, nenhum conversor, nenhuma ação. Os callbacks foram executados, mas nada foi exibido porque não encontraram uma ação de destino. A página 404 é a nossa:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1"></a>curl -i http://localhost:5000/unknown
+</code></pre></div></td></tr></table></div>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-15-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-15-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-15-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-15-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-15-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-15-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-15-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-15-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-15-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-15-10">10</a></span>
+<span class="normal"><a href="#__codelineno-15-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1"></a>HTTP/1.1 404 NOT FOUND
+<a id="__codelineno-15-2" name="__codelineno-15-2"></a>Content-Type: text/html; charset=utf-8
+<a id="__codelineno-15-3" name="__codelineno-15-3"></a>Content-Length: 375
+<a id="__codelineno-15-4" name="__codelineno-15-4"></a>...
+<a id="__codelineno-15-5" name="__codelineno-15-5"></a>  &lt;div class="alert alert-danger"&gt;
+<a id="__codelineno-15-6" name="__codelineno-15-6"></a>    &lt;h1 class="h4"&gt;Error 404&lt;/h1&gt;
+<a id="__codelineno-15-7" name="__codelineno-15-7"></a>    &lt;p class="mb-0"&gt;
+<a id="__codelineno-15-8" name="__codelineno-15-8"></a>Page not found.
+<a id="__codelineno-15-9" name="__codelineno-15-9"></a>    &lt;/p&gt;
+<a id="__codelineno-15-10" name="__codelineno-15-10"></a>  &lt;/div&gt;
+<a id="__codelineno-15-11" name="__codelineno-15-11"></a>...
+</code></pre></div></td></tr></table></div>
+<p>Vamos nos concentrar no essencial. As funções <strong><em>[before_request]</em></strong> são o lugar certo para as verificações comuns a muitas ações (o usuário está logado? Ele tem permissão para acessar esta ação?): o próximo capítulo as usa para a autenticação. Os tratadores de erro garantem que o usuário nunca veja uma página técnica, seja qual for o erro: o estudo de caso inclui um para cada tipo de erro.</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner">
+
+      <div>
+        <a href="https://stahe.github.io" target="_blank">
+          https://stahe.github.io
+        </a>
+        <br>
+        Este tutorial, escrito pela IA <strong>Claude</strong>, da Anthropic, a pedido de <strong>Serge Tahé</strong>, é disponibilizado ao público sob os termos da licença
+        <em>Creative Commons Atribuição – Uso Não Comercial –
+        Compartilha Igual 3.0 Não Adaptada</em>.
+
+      </div>
+
+    </div>
+  </div>
+
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.sections", "navigation.indexes", "navigation.expand", "toc.integrate", "navigation.top"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="javascripts/focus.js"></script>
+      
+    
+  </body>
+</html>
